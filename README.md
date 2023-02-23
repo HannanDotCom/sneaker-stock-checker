@@ -6,20 +6,26 @@ The web app was built using Spring for the RESTful backend and Angular for the J
 
 ## Requirements
 Java 17 
+
 MySQL server instance running in the background - server properties should be configured in:
 ```
 nike-stock-checker/spring-backend/src/main/resources/application.properties
 ```
 Maven 3.9+ for package dependencies
 
+**NOTE**
+
+Pre-installation of node.js and its packages is unnecessary as this is conducted during build time in the next step.
+
 ## How to run
 1) Within the root folder, in cmd run:
 ```
 mvn clean install
 ```
-This should create a .jar file within the `spring-backend` folder.
 
-2) Go to the `spring-backend` folder and execute the .jar file in cmd.
+This should create a .jar file within the newly created `spring-backend/target`.
+
+2) Go to `spring-backend/target` and execute the .jar file in cmd.
 
 3) On your web browser, visit the following URL to access the application:
 ```
