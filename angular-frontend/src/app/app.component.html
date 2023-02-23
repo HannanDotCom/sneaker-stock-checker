@@ -1,0 +1,176 @@
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+<nav class="navbar navbar-expand-lg static-top">
+  <a class="navbar-brand" style="color:white;"><img src="./assets/site-logo.png" alt="Logo" class="site-logo">Nike.com
+    Stock Checker</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler"
+    aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarToggler">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" (click)="onOpenModal('add', undefined)">Add Item</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" (click)="notifyMe()">Notify me!</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main container for displaying items in database -->
+<div class="container" id="main-container">
+  <div class="items-row row align-items-center">
+    <div *ngFor="let desiredItem of desiredItems" class="col-md-6 col-xl-4">
+      <div class="card">
+        <div class="item-img-row row">
+          <div class="col-12 d-flex align-items-end justify-content-center">
+            <img src="{{desiredItem?.imageURL}}" alt="" class="item-img">
+          </div>
+        </div>
+        <div class="item-title-row row">
+          <div class="col-12 item-title">
+            <h5>{{desiredItem?.name}}</h5>
+          </div>
+        </div>
+        <div class="item-info row align-items-center justify-content-around">
+          <div class="size col-6 text-center font-weight-bold">Size</div>
+          <div class="stock col-6 text-center font-weight-bold">In stock</div>
+          <div class="size-info col-6 text-center">{{desiredItem?.size}}</div>
+          <div class="stock-info col-6 text-center"><img src="./assets/red-cross.png"
+              *ngIf="desiredItem?.inStock===false" width="20" aria-labelledby="itemInStock"><img
+              src="./assets/green-tick.png" *ngIf="desiredItem?.inStock===true" width="20"
+              aria-labelledby="itemNotInStock"></div>
+        </div>
+        <div class="item-buttons row align-items-center justify-content-around">
+          <div class="edit-btn">
+            <a (click)="onOpenModal('edit', desiredItem)" class="btn tooltips" data-placement="top"
+              data-original-title="Edit"><i class="fa fa-pencil"></i> </a>
+          </div>
+          <div class="delete-btn">
+            <a (click)="onOpenModal('delete', desiredItem)" class="btn tooltips" data-placement="top"
+              data-original-title="Delete"><i class="fa fa-times"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="loader" *ngIf="getLoading()"></div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal fade" id="addDesiredItemModal" tabindex="-1" role="dialog" aria-labelledby="addDesiredItemModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addDesiredItemModalLabel">Add Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #addForm="ngForm" (ngSubmit)="onAddItem(addForm)">
+          <div class="form-group">
+            <label for="itemURL">Item URL</label>
+            <input type="url" ngModel name="itemURL" class="form-control" id="itemURL" placeholder="Item URL" required>
+          </div>
+          <div class="form-group">
+            <label for="size">Size</label>
+            <input type="text" ngModel name="size" class="form-control" id="size" placeholder="Size" required>
+          </div>
+          <input type="hidden" ngModel="{{editDesiredItem?.itemID}}" name="itemID" class="form-control" id="itemID"
+            placeholder="Item ID">
+          <input type="hidden" ngModel="{{editDesiredItem?.name}}" name="name" class="form-control" id="name"
+            placeholder="Item Name">
+          <input type="hidden" ngModel="{{editDesiredItem?.inStock}}" name="inStock" class="form-control" id="inStock"
+            placeholder="Stock">
+          <input type="hidden" ngModel="{{editDesiredItem?.imageURL}}" name="imageURL" class="form-control"
+            id="imageURL" placeholder="Image URL">
+          <div class="modal-footer">
+            <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary confirm-btn">Add item</button>
+            <button type="button" id="add-item-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Item Modal -->
+<div class="modal fade" id="updateDesiredItemModal" tabindex="-1" role="dialog" aria-labelledby="updateDesiredItemLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateDesiredItemLabel">Edit Item {{editDesiredItem?.name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #editForm="ngForm">
+          <div class="form-group">
+            <label for="itemURL">Item URL</label>
+            <input type="text" ngModel="{{editDesiredItem?.itemURL}}" name="itemURL" class="form-control" id="itemURL"
+              placeholder="Item URL">
+          </div>
+          <div class="form-group">
+            <label for="size">Size</label>
+            <input type="text" ngModel="{{editDesiredItem?.size}}" name="size" class="form-control" id="size"
+              placeholder="Size">
+          </div>
+          <input type="hidden" ngModel="{{editDesiredItem?.itemID}}" name="itemID" class="form-control" id="itemID"
+            placeholder="Item ID">
+          <input type="hidden" ngModel="{{editDesiredItem?.name}}" name="name" class="form-control" id="name"
+            placeholder="Item Name">
+          <input type="hidden" ngModel="{{editDesiredItem?.inStock}}" name="inStock" class="form-control" id="inStock"
+            placeholder="Stock">
+          <input type="hidden" ngModel="{{editDesiredItem?.imageURL}}" name="imageURL" class="form-control"
+            id="imageURL" placeholder="Image URL">
+          <div class="modal-footer">
+            <button (click)="onUpdateDesiredItem(editForm.value)" data-dismiss="modal"
+              class="btn btn-primary confirm-btn">Save
+              changes</button>
+            <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Item Modal -->
+<div class="modal fade" id="deleteDesiredItemModal" tabindex="-1" role="dialog"
+  aria-labelledby="deleteDesiredItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteDesiredItemModalLabel">Delete Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete {{deleteDesiredItem?.name}}?</p>
+        <div class="modal-footer">
+          <button (click)="onDeleteDesiredItem(deleteDesiredItem!.itemID)" class="btn btn-primary confirm-btn"
+            data-dismiss="modal">Yes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification for no items -->
+<div *ngIf="desiredItems?.length == 0" class="no-items-notif col-lg-12 col-md-12 col-xl-12">
+  <h2 class="no-items-header">NO ITEMS</h2>
+  <p class="text-center" style="color:white;">No items were found.</p>
+</div>
