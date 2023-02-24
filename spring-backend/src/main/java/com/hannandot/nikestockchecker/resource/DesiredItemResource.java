@@ -56,9 +56,7 @@ public class DesiredItemResource {
    */
   @PostMapping("/add")
     public ResponseEntity<DesiredItem> addDesiredItem(@RequestBody DesiredItem desiredItem) throws IOException {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--disable-gpu","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage");
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = new ChromeDriver();
         // Name, image URL and stock status retrieved from using service class
         desiredItem.setName(desiredItemService.getName(desiredItem.getItemURL(), driver));
         desiredItem.setImageURL(desiredItemService.getImageURL(desiredItem.getItemURL(), driver));
@@ -75,9 +73,7 @@ public class DesiredItemResource {
    */
   @PutMapping("/update")
     public ResponseEntity<DesiredItem> updateDesiredItem(@RequestBody DesiredItem desiredItem) {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--disable-gpu","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage");
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = new ChromeDriver();
         // Name, image URL and stock status updated upon PUT request
         desiredItem.setName(desiredItemService.getName(desiredItem.getItemURL(), driver));
         desiredItem.setImageURL(desiredItemService.getImageURL(desiredItem.getItemURL(), driver));
@@ -96,9 +92,7 @@ public class DesiredItemResource {
     public ResponseEntity<List<DesiredItem>> updateDesiredItemStock (@RequestBody List<DesiredItem> desiredItemList) {
         List<DesiredItem> updatedList = new ArrayList<>();
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--disable-gpu","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage");
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = new ChromeDriver();
 
         if (desiredItemList.size() != 0) {
             for (DesiredItem desiredItem : desiredItemList) {
